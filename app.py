@@ -3,6 +3,7 @@ import re
 from core.pronunciation_assessment import run_pronunciation_assessment
 import os
 import datetime
+from flask import send_file
 
 def split_text(text):
     # Split text by comma or space
@@ -28,7 +29,6 @@ def evaluate_pronunciation(audio1, audio2, audio3, audio4, audio5, word1, word2,
 def export_results(result1, result2, result3, result4, result5):
     now = datetime.datetime.now()
     filename = f"{now.strftime('%Y%m%d%M%S')}-evaluation_results.md"
-
     markdown_content = f"""# Pronunciation Evaluation Results
 
 1. {result1}
@@ -37,10 +37,11 @@ def export_results(result1, result2, result3, result4, result5):
 4. {result4}
 5. {result5}
 """
+
     with open(filename, "w") as f:
         f.write(markdown_content)
 
-    return f"Results exported to {filename}"
+    return send_file(filename, as_attachment=True)
 
 with gr.Blocks(css="#app { font-size: 2.0rem; }") as app:
     # Input text area and control buttons
