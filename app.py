@@ -120,5 +120,35 @@ with gr.Blocks(css="#app { font-size: 2.0rem; }") as app:
         outputs=[result_box]
     )
 
+    download_1.click(
+        fn=lambda x: x,
+        inputs=[audio_1],
+        outputs=download_audio_1
+    )
+
+    download_2.click(
+        fn=lambda x: x,
+        inputs=[audio_2],
+        outputs=download_audio_2
+    )
+
+    download_3.click(
+        fn=lambda x: x,
+        inputs=[audio_3],
+        outputs=download_audio_3
+    )
+
+    download_4.click(
+        fn=lambda x: x,
+        inputs=[audio_4],
+        outputs=download_audio_4
+    )
+
+    download_5.click(
+        fn=lambda x: x,
+        inputs=[audio_5],
+        outputs=download_audio_5
+    )
+
 # Launch the app with specified host and port
 app.launch(server_name="0.0.0.0", server_port=int(os.getenv("PORT", 7860)))
