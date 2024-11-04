@@ -46,6 +46,7 @@ with gr.Blocks(css="#app { font-size: 2.0rem; }") as app:
         with gr.Column():
             input_text = gr.Textbox(label="Enter five words (separated by commas or spaces)", 
                                   container=True)
+            copy_btn = gr.Button("Copy Markdown", variant="primary")
         with gr.Column():
             split_btn = gr.Button("Split text", variant="primary")
             evaluate_btn = gr.Button("evaluate", variant="primary")
@@ -148,6 +149,12 @@ with gr.Blocks(css="#app { font-size: 2.0rem; }") as app:
         fn=lambda x: x,
         inputs=[audio_5],
         outputs=download_audio_5
+    )
+
+    copy_btn.click(
+        fn=export_results,
+        inputs=[result_1, result_2, result_3, result_4, result_5],
+        outputs=[gr.Clipboard()]
     )
 
 # Launch the app with specified host and port
