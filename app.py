@@ -60,26 +60,47 @@ with gr.Blocks(css="#app { font-size: 2.0rem; }") as app:
     with gr.Row():
         with gr.Column():
             word_1 = gr.Textbox(label="Word_1")
-            word_2 = gr.Textbox(label="Word_2")
-            word_3 = gr.Textbox(label="Word_3")
-            word_4 = gr.Textbox(label="Word_4")
-            word_5 = gr.Textbox(label="Word_5")
             audio_1 = gr.Audio(type="filepath", label="Record_1")
-            audio_2 = gr.Audio(type="filepath", label="Record_2")
-            audio_3 = gr.Audio(type="filepath", label="Record_3")
-            audio_4 = gr.Audio(type="filepath", label="Record_4")
-            audio_5 = gr.Audio(type="filepath", label="Record_5")
-            download_audio_1 = gr.File(label="Download Audio 1")
-            download_audio_2 = gr.File(label="Download Audio 2")
-            download_audio_3 = gr.File(label="Download Audio 3")
-            download_audio_4 = gr.File(label="Download Audio 4")
-            download_audio_5 = gr.File(label="Download Audio 5")
+            download_1 = gr.Button("Download Audio 1", variant="primary")
         with gr.Column():
             result_1 = gr.Textbox(label="Evaluation_result_1")
+            download_audio_1 = gr.File(label="Download Audio 1")
+    
+    with gr.Row():
+        with gr.Column():
+            word_2 = gr.Textbox(label="Word_2")
+            audio_2 = gr.Audio(type="filepath", label="Record_2")
+            download_2 = gr.Button("Download Audio 2", variant="primary")
+        with gr.Column():
             result_2 = gr.Textbox(label="Evaluation_result_2")
+            download_audio_2 = gr.File(label="Download Audio 2")
+    
+    with gr.Row():
+        with gr.Column():
+            word_3 = gr.Textbox(label="Word_3")
+            audio_3 = gr.Audio(type="filepath", label="Record_3")
+            download_3 = gr.Button("Download Audio 3", variant="primary")
+        with gr.Column():
             result_3 = gr.Textbox(label="Evaluation_result_3")
+            download_audio_3 = gr.File(label="Download Audio 3")
+    
+    with gr.Row():
+        with gr.Column():
+            word_4 = gr.Textbox(label="Word_4")
+            audio_4 = gr.Audio(type="filepath", label="Record_4")
+            download_4 = gr.Button("Download Audio 4", variant="primary")
+        with gr.Column():
             result_4 = gr.Textbox(label="Evaluation_result_4")
+            download_audio_4 = gr.File(label="Download Audio 4")
+    
+    with gr.Row():
+        with gr.Column():
+            word_5 = gr.Textbox(label="Word_5")
+            audio_5 = gr.Audio(type="filepath", label="Record_5")
+            download_5 = gr.Button("Download Audio 5", variant="primary")
+        with gr.Column():
             result_5 = gr.Textbox(label="Evaluation_result_5")
+            download_audio_5 = gr.File(label="Download Audio 5")
 
     # Event handlers
     split_btn.click(
