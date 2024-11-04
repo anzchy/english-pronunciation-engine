@@ -1,3 +1,4 @@
+# no need for flask, just use javascript to handle the file download
 import gradio as gr
 import re
 from core.pronunciation_assessment import run_pronunciation_assessment
