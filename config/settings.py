@@ -1,4 +1,7 @@
 # config/settings.py
+import os
+
+
 MICROSOFT_API_KEY = os.getenv('MICROSOFT_API_KEY')
 MICROSOFT_REGION = "eastus2"
 LANGUAGE = "en-US"
