@@ -3,6 +3,8 @@ import re
 from core.pronunciation_assessment import run_pronunciation_assessment
 import os
 import datetime
+import io
+from flask import send_file
 
 def split_text(text):
     # Split text by comma or space
@@ -36,7 +38,12 @@ def export_results(result1, result2, result3, result4, result5):
 4. {result4}
 5. {result5}
 """
-    return markdown_content
+    return send_file(
+        io.BytesIO(markdown_content.encode()),
+        mimetype="text/markdown",
+        as_attachment=True,
+        download_name=filename
+    )
 
 with gr.Blocks(css="#app { font-size: 2.0rem; }") as app:
     # Input text area and control buttons
@@ -92,37 +99,6 @@ with gr.Blocks(css="#app { font-size: 2.0rem; }") as app:
         fn=export_results,
         inputs=[result_1, result_2, result_3, result_4, result_5],
         outputs=gr.Textbox(label="Download Status")
-    )
-
-    # Add JavaScript to handle the file download
-    app.queue().process_event(
-        "click",
-        download_btn,
-        """
-        fetch('/export_results', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            result1: result1.value,
-            result2: result2.value,
-            result3: result3.value,
-            result4: result4.value,
-            result5: result5.value
-          })
-        })
-        .then(response => response.text())
-        .then(markdown => {
-          const downloadLink = document.createElement('a');
-          downloadLink.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(markdown));
-          downloadLink.setAttribute('download', filename);
-          document.body.appendChild(downloadLink);
-          downloadLink.click();
-          document.body.removeChild(downloadLink);
-        })
-        .catch(error => console.error('Error:', error));
-        """
     )
 
 # Launch the app with specified host and port
