@@ -149,5 +149,6 @@ with gr.Blocks(css="#app { font-size: 2.0rem; }") as app:
         outputs=download_audio_5
     )
 
-# Launch the app
-app.launch()
+
+# Launch the app with specified host and port
+app.launch(server_name="0.0.0.0", server_port=int(os.getenv("PORT", 7860)))
