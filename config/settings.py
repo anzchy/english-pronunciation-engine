@@ -1,0 +1,7 @@
+# config/settings.py
+MICROSOFT_API_KEY = os.getenv('MICROSOFT_API_KEY')
+MICROSOFT_REGION = "eastus2"
+LANGUAGE = "en-US"
+REFERENCE_TEXT = "like"
+ENABLE_MISCUE = True
+ENABLE_PROSODY_ASSESSMENT = True

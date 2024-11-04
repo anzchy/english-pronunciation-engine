@@ -1,0 +1,2 @@
+gradio
+azure-cognitiveservices-speech
