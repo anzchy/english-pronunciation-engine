@@ -1,2 +1,3 @@
 gradio
 azure-cognitiveservices-speech
+flask

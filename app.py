@@ -1,9 +1,11 @@
-# no need for flask, just use javascript to handle the file download
 import gradio as gr
 import re
 from core.pronunciation_assessment import run_pronunciation_assessment
 import os
 import datetime
+from flask import Flask, request, send_file
+
+app = Flask(__name__)
 
 def split_text(text):
     # Split text by comma or space
@@ -26,18 +28,25 @@ def evaluate_pronunciation(audio1, audio2, audio3, audio4, audio5, word1, word2,
     except Exception as e:
         return f"Error: {e}"
 
-def export_results(result1, result2, result3, result4, result5):
+@app.route('/export_results', methods=['POST'])
+def export_results():
+    data = request.get_json()
     now = datetime.datetime.now()
     filename = f"{now.strftime('%Y%m%d%M%S')}-evaluation_results.md"
     markdown_content = f"""# Pronunciation Evaluation Results
 
-1. {result1}
-2. {result2}
-3. {result3}
-4. {result4}
-5. {result5}
+1. {data['result1']}
+2. {data['result2']}
+3. {data['result3']}
+4. {data['result4']}
+5. {data['result5']}
 """
-    return markdown_content
+    return send_file(
+        io.BytesIO(markdown_content.encode()),
+        mimetype="text/markdown",
+        as_attachment=True,
+        download_name=filename
+    )
 
 with gr.Blocks(css="#app { font-size: 2.0rem; }") as app:
     # Input text area and control buttons
@@ -54,10 +63,21 @@ with gr.Blocks(css="#app { font-size: 2.0rem; }") as app:
     with gr.Row():
         with gr.Column():
             word_1 = gr.Textbox(label="Word_1")
+            word_2 = gr.Textbox(label="Word_2")
+            word_3 = gr.Textbox(label="Word_3")
+            word_4 = gr.Textbox(label="Word_4")
+            word_5 = gr.Textbox(label="Word_5")
             audio_1 = gr.Audio(type="filepath", label="Record_1")
-            download_audio_1 = gr.File(label="Download Audio 1")
+            audio_2 = gr.Audio(type="filepath", label="Record_2")
+            audio_3 = gr.Audio(type="filepath", label="Record_3")
+            audio_4 = gr.Audio(type="filepath", label="Record_4")
+            audio_5 = gr.Audio(type="filepath", label="Record_5")
         with gr.Column():
             result_1 = gr.Textbox(label="Evaluation_result_1")
+            result_2 = gr.Textbox(label="Evaluation_result_2")
+            result_3 = gr.Textbox(label="Evaluation_result_3")
+            result_4 = gr.Textbox(label="Evaluation_result_4")
+            result_5 = gr.Textbox(label="Evaluation_result_5")
 
     # Event handlers
     split_btn.click(
@@ -76,39 +96,8 @@ with gr.Blocks(css="#app { font-size: 2.0rem; }") as app:
     download_btn.click(
         fn=export_results,
         inputs=[result_1, result_2, result_3, result_4, result_5],
-        outputs=gr.Textbox(label="Download Status")
+        outputs=None
     )
 
-    # Add JavaScript to handle the file download
-    app.queue().process_event(
-        "click",
-        download_btn,
-        """
-        fetch('/export_results', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            result1: result1.value,
-            result2: result2.value,
-            result3: result3.value,
-            result4: result4.value,
-            result5: result5.value
-          })
-        })
-        .then(response => response.text())
-        .then(markdown => {
-          const downloadLink = document.createElement('a');
-          downloadLink.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(markdown));
-          downloadLink.setAttribute('download', filename);
-          document.body.appendChild(downloadLink);
-          downloadLink.click();
-          document.body.removeChild(downloadLink);
-        })
-        .catch(error => console.error('Error:', error));
-        """
-    )
-
-# Launch the app with specified host and port
-app.launch(server_name="0.0.0.0", server_port=int(os.getenv("PORT", 7860)))
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=int(os.getenv("PORT", 7860)))
