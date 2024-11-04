@@ -3,7 +3,6 @@ import re
 from core.pronunciation_assessment import run_pronunciation_assessment
 import os
 import datetime
-from flask import send_file
 
 def split_text(text):
     # Split text by comma or space
@@ -37,11 +36,7 @@ def export_results(result1, result2, result3, result4, result5):
 4. {result4}
 5. {result5}
 """
-
-    with open(filename, "w") as f:
-        f.write(markdown_content)
-
-    return send_file(filename, as_attachment=True)
+    return markdown_content
 
 with gr.Blocks(css="#app { font-size: 2.0rem; }") as app:
     # Input text area and control buttons
@@ -52,104 +47,67 @@ with gr.Blocks(css="#app { font-size: 2.0rem; }") as app:
         with gr.Column():
             split_btn = gr.Button("Split text", variant="primary")
             evaluate_btn = gr.Button("evaluate", variant="primary")
-            export_btn = gr.Button("export", variant="primary")
-    
+            download_btn = gr.Button("Download Markdown", variant="primary")
+
     # Words and recording sections
     with gr.Row():
         with gr.Column():
             word_1 = gr.Textbox(label="Word_1")
             audio_1 = gr.Audio(type="filepath", label="Record_1")
-            download_1 = gr.Button("Download Audio 1", variant="primary")
+            download_audio_1 = gr.File(label="Download Audio 1")
         with gr.Column():
             result_1 = gr.Textbox(label="Evaluation_result_1")
-            download_audio_1 = gr.File(label="Download Audio 1")
-    
-    with gr.Row():
-        with gr.Column():
-            word_2 = gr.Textbox(label="Word_2")
-            audio_2 = gr.Audio(type="filepath", label="Record_2")
-            download_2 = gr.Button("Download Audio 2", variant="primary")
-        with gr.Column():
-            result_2 = gr.Textbox(label="Evaluation_result_2")
-            download_audio_2 = gr.File(label="Download Audio 2")
-    
-    with gr.Row():
-        with gr.Column():
-            word_3 = gr.Textbox(label="Word_3")
-            audio_3 = gr.Audio(type="filepath", label="Record_3")
-            download_3 = gr.Button("Download Audio 3", variant="primary")
-        with gr.Column():
-            result_3 = gr.Textbox(label="Evaluation_result_3")
-            download_audio_3 = gr.File(label="Download Audio 3")
-    
-    with gr.Row():
-        with gr.Column():
-            word_4 = gr.Textbox(label="Word_4")
-            audio_4 = gr.Audio(type="filepath", label="Record_4")
-            download_4 = gr.Button("Download Audio 4", variant="primary")
-        with gr.Column():
-            result_4 = gr.Textbox(label="Evaluation_result_4")
-            download_audio_4 = gr.File(label="Download Audio 4")
-    
-    with gr.Row():
-        with gr.Column():
-            word_5 = gr.Textbox(label="Word_5")
-            audio_5 = gr.Audio(type="filepath", label="Record_5")
-            download_5 = gr.Button("Download Audio 5", variant="primary")
-        with gr.Column():
-            result_5 = gr.Textbox(label="Evaluation_result_5")
-            download_audio_5 = gr.File(label="Download Audio 5")
-    
+
     # Event handlers
     split_btn.click(
         fn=split_text,
         inputs=[input_text],
         outputs=[word_1, word_2, word_3, word_4, word_5]
     )
-    
+
     evaluate_btn.click(
         fn=evaluate_pronunciation,
         inputs=[audio_1, audio_2, audio_3, audio_4, audio_5,
                 word_1, word_2, word_3, word_4, word_5],
         outputs=[result_1, result_2, result_3, result_4, result_5]
     )
-    
-    export_btn.click(
+
+    download_btn.click(
         fn=export_results,
         inputs=[result_1, result_2, result_3, result_4, result_5],
-        outputs=gr.Textbox(label="Export Status")
+        outputs=gr.Textbox(label="Download Status")
     )
 
-    download_1.click(
-        fn=lambda x: x,
-        inputs=[audio_1],
-        outputs=download_audio_1
+    # Add JavaScript to handle the file download
+    app.queue().process_event(
+        "click",
+        download_btn,
+        """
+        fetch('/export_results', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            result1: result1.value,
+            result2: result2.value,
+            result3: result3.value,
+            result4: result4.value,
+            result5: result5.value
+          })
+        })
+        .then(response => response.text())
+        .then(markdown => {
+          const downloadLink = document.createElement('a');
+          downloadLink.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(markdown));
+          downloadLink.setAttribute('download', filename);
+          document.body.appendChild(downloadLink);
+          downloadLink.click();
+          document.body.removeChild(downloadLink);
+        })
+        .catch(error => console.error('Error:', error));
+        """
     )
-
-    download_2.click(
-        fn=lambda x: x,
-        inputs=[audio_2],
-        outputs=download_audio_2
-    )
-
-    download_3.click(
-        fn=lambda x: x,
-        inputs=[audio_3],
-        outputs=download_audio_3
-    )
-
-    download_4.click(
-        fn=lambda x: x,
-        inputs=[audio_4],
-        outputs=download_audio_4
-    )
-
-    download_5.click(
-        fn=lambda x: x,
-        inputs=[audio_5],
-        outputs=download_audio_5
-    )
-
 
 # Launch the app with specified host and port
 app.launch(server_name="0.0.0.0", server_port=int(os.getenv("PORT", 7860)))
