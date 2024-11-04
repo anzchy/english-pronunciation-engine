@@ -4,7 +4,7 @@ from core.pronunciation_assessment import run_pronunciation_assessment
 import os
 import datetime
 import io
-from flask import send_file
+
 
 def split_text(text):
     # Split text by comma or space
@@ -28,9 +28,9 @@ def evaluate_pronunciation(audio1, audio2, audio3, audio4, audio5, word1, word2,
         return f"Error: {e}"
 
 def export_results(result1, result2, result3, result4, result5):
-    now = datetime.datetime.now()
-    filename = f"{now.strftime('%Y%m%d%M%S')}-evaluation_results.md"
-    markdown_content = f"""# Pronunciation Evaluation Results
+#    now = datetime.datetime.now()
+#    filename = f"{now.strftime('%Y%m%d%M%S')}-evaluation_results.md"
+    markdown_content = f"""## Pronunciation Evaluation Results
 
 1. {result1}
 2. {result2}
@@ -38,12 +38,7 @@ def export_results(result1, result2, result3, result4, result5):
 4. {result4}
 5. {result5}
 """
-    return send_file(
-        io.BytesIO(markdown_content.encode()),
-        mimetype="text/markdown",
-        as_attachment=True,
-        download_name=filename
-    )
+    return markdown_content
 
 with gr.Blocks(css="#app { font-size: 2.0rem; }") as app:
     # Input text area and control buttons
@@ -54,7 +49,10 @@ with gr.Blocks(css="#app { font-size: 2.0rem; }") as app:
         with gr.Column():
             split_btn = gr.Button("Split text", variant="primary")
             evaluate_btn = gr.Button("evaluate", variant="primary")
-            download_btn = gr.Button("Download Markdown", variant="primary")
+            generate_md_btn = gr.Button("Generate Markdown", variant="primary")
+  
+    with gr.Row():
+        result_box = gr.Textbox(label="Assessment Results")
 
     # Words and recording sections
     with gr.Row():
@@ -116,10 +114,10 @@ with gr.Blocks(css="#app { font-size: 2.0rem; }") as app:
         outputs=[result_1, result_2, result_3, result_4, result_5]
     )
 
-    download_btn.click(
+    generate_md_btn.click(
         fn=export_results,
         inputs=[result_1, result_2, result_3, result_4, result_5],
-        outputs=gr.Textbox(label="Download Status")
+        outputs=[result_box]
     )
 
 # Launch the app with specified host and port
