@@ -103,8 +103,7 @@ with gr.Blocks(css="#app { font-size: 2.0rem; }") as app:
 
     # add a usage text and link to github repo
     with gr.Row():
-        usage_text = gr.Textbox(label="How to use this website", value="Please refer to <a href='https://github.com/your-username/your-repo'>my github repo</a>", interactive=False, markup=True)
-       
+        usage_text = gr.Markdown("How to use this website: Please refer to [my github repository](https://github.com/anzchy/english-pronunciation-engine)")       
     # Event handlers
     split_btn.click(
         fn=split_text,
