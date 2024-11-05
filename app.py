@@ -101,6 +101,10 @@ with gr.Blocks(css="#app { font-size: 2.0rem; }") as app:
             result_5 = gr.Textbox(label="Evaluation_result_5")
             download_audio_5 = gr.File(label="Download Audio 5")
 
+    # add a usage text and link to github repo
+    with gr.Row():
+        usage_text = gr.Textbox(label="How to use this website", value="Please refer to <a href='https://github.com/your-username/your-repo'>my github repo</a>", interactive=False, markup=True)
+       
     # Event handlers
     split_btn.click(
         fn=split_text,
